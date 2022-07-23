@@ -20,9 +20,12 @@ export default function App() {
       console.log("허락함");
     };
     const {coords:{latitude,longitude}} = await Location.getCurrentPositionAsync({accuracy: 5}) ; //사용자의 현위치를 가져옴 
-    // console.log(location);
     const currentCity = await Location.reverseGeocodeAsync({latitude, longitude}, {useGoogleMaps: false}); //위도 경도로 내 위치 알아버리기~
     setCity(currentCity[0].city);
+    
+    const respoonse = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${API}`);
+    const json = await respoonse.json();
+    console.log(json);
     setLocation();
   };
 
