@@ -1,6 +1,15 @@
+import {Fontisto} from "@expo/vector-icons";
 import * as Location from "expo-location";
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, ScrollView, Dimensions, DynamicColorIOS } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Dimensions,
+  DynamicColorIOS,
+  ActivityIndicator,
+} from "react-native";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 // const windowwIDHeight = Dimensions.get('window').height;
@@ -9,27 +18,36 @@ export default function App() {
   const [city, setCity] = useState("도시 불러오는 중");
   const [days, setDays] = useState([]);
   const API = "5cf405a74a9e4d1a795b2aaeaffa9264";
+  const icons = {
+    "Clouds":"cloudy"
+  };
+  c
   const [ok, setOk] = useState(true);
-  const getWeaather = async () => {
-   
+  const getWeaather = async () => { //날씨와 위치를 가져오는 함수
     const { granted } = await Location.requestForegroundPermissionsAsync(); //사용자 위치정보 물어보는 함수
     if (granted == false) {
-      //유저가 사용자 위치정보 거절함
+      //유저가 사용자 위치정보 거절하면 OK를 FALSE로
       setOk(false);
     } else {
       console.log("허락함");
-    };
-    const {coords:{latitude,longitude}} = await Location.getCurrentPositionAsync({accuracy: 5}) ; //사용자의 현위치를 가져옴 
-    const currentCity = await Location.reverseGeocodeAsync({latitude, longitude}, {useGoogleMaps: false}); //위도 경도로 내 위치 알아버리기~
+    }
+    const {
+      coords: { latitude, longitude },
+    } = await Location.getCurrentPositionAsync({ accuracy: 5 }); //사용자의 현위치를 가져옴
+    const currentCity = await Location.reverseGeocodeAsync(
+      { latitude, longitude },
+      { useGoogleMaps: false }
+    ); //위도 경도로 사용자 위치 가져옴
     setCity(currentCity[0].city);
-    
-    const respoonse = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${API}`);
+    //날씨 api
+    const respoonse = await fetch(
+      `https://api.openweathermap.org/data/2.5/onecall?lat=${latitude}&lon=${longitude}&exclude={alerts}&appid=${API}&units=metric`
+    );
     const json = await respoonse.json();
-    console.log(json);
-    setLocation();
+    setDays(json.daily);
   };
 
-  useEffect(() => {
+  useEffect(() => { //마운트 되면 실행
     getWeaather();
   }, []);
 
@@ -41,6 +59,7 @@ export default function App() {
       <View style={styles.city}>
         <Text style={styles.cityText}>{city}</Text>
       </View>
+      {/* ScrollView는 style props가 아닌 container style */}
       <ScrollView
         horizontal
         co={styles.weather}
@@ -48,16 +67,18 @@ export default function App() {
         pagingEnabled //스크롤 쫀쫀하게
         contentContainerStyle={styles.weather}
       >
-        {/* ScrollView는 style props가 아닌 container style */}
-
-        <View style={styles.day}>
-          <Text style={styles.temp}> 27</Text>
-          <Text style={styles.sunny}> SUNNY</Text>
-        </View>
-        <View style={styles.day}>
-          <Text style={styles.temp}> 27</Text>
-          <Text style={styles.sunny}> SUNNY</Text>
-        </View>
+        {/* //days가 없다면 로딩화면 */}
+        {days.length === 0 ? (
+          <View style={styles.day}>
+            <ActivityIndicator color="white" size="large"></ActivityIndicator>
+          </View>
+        ) : (
+            days.map((day, index)=>  <View key={index} style={styles.day}>
+              <Text style={styles.temp}>{parseFloat(day.temp.day).toFixed(1)}</Text>
+              <Text style={styles. sunny}>{day.weather[0].main}</Text>
+              <Text style={styles.tinyText}>{day.weather[0].description}</Text>
+            </View>)
+)}
       </ScrollView>
     </View>
   );
@@ -92,4 +113,7 @@ const styles = StyleSheet.create({
     marginTop: -20,
     fontSize: 60,
   },
+  tinyText : {
+    fontSize:20
+  }
 });
