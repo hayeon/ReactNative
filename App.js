@@ -7,7 +7,6 @@ import {
   StyleSheet,
   ScrollView,
   Dimensions,
-  DynamicColorIOS,
   ActivityIndicator,
 } from "react-native";
 
@@ -63,7 +62,7 @@ export default function App() {
       <ScrollView
         horizontal
         co={styles.weather}
-        indicatorStyle="white" //하단 스크롤바 color 안드로이드느 ㄴ안됨
+        indicatorStyle="white" //하단 스크롤바 color 안드로이드에선 안됨
         pagingEnabled //스크롤 쫀쫀하게
         contentContainerStyle={styles.weather}
       >
@@ -74,7 +73,10 @@ export default function App() {
           </View>
         ) : (
             days.map((day, index)=>  <View key={index} style={styles.day}>
-              <Text style={styles.temp}>{parseFloat(day.temp.day).toFixed(1)}</Text>
+              <View>
+              <Text style={styles.temp}>{parseFloat(day.temp.day).toFixed(1)}</Text> 
+                
+                </View>              
               <Text style={styles. sunny}>{day.weather[0].main}</Text>
               <Text style={styles.tinyText}>{day.weather[0].description}</Text>
             </View>)
