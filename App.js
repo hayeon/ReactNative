@@ -1,4 +1,5 @@
 import {Fontisto} from "@expo/vector-icons";
+import { Ionicons, Feather } from '@expo/vector-icons'; 
 import * as Location from "expo-location";
 import React, { useEffect, useState } from "react";
 import {
@@ -18,9 +19,15 @@ export default function App() {
   const [days, setDays] = useState([]);
   const API = "5cf405a74a9e4d1a795b2aaeaffa9264";
   const icons = {
-    "Clouds":"cloudy"
+    Clouds:"cloudy",
+    Clear : "day-sunny",
+    Atmosphere:"cloudy-guts",
+    Snow: "snow",
+    Rain: "rainy",
+    Drizzle: "rains",
+    Thunderstorm:"lightning"
   };
-  c
+  
   const [ok, setOk] = useState(true);
   const getWeaather = async () => { //날씨와 위치를 가져오는 함수
     const { granted } = await Location.requestForegroundPermissionsAsync(); //사용자 위치정보 물어보는 함수
@@ -73,9 +80,9 @@ export default function App() {
           </View>
         ) : (
             days.map((day, index)=>  <View key={index} style={styles.day}>
-              <View>
+              <View style={{flexDirection:"row", alignItems:"flex-end", justifyContent: "space-between"}}>
               <Text style={styles.temp}>{parseFloat(day.temp.day).toFixed(1)}</Text> 
-                
+              <Ionicons name={icons[day.weather[0].main]} size={40} color="black" /> 
                 </View>              
               <Text style={styles. sunny}>{day.weather[0].main}</Text>
               <Text style={styles.tinyText}>{day.weather[0].description}</Text>
@@ -108,12 +115,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   temp: {
-    fontSize: 178,
+    fontSize: 100,
     marginTop: 50,
   },
   sunny: {
     marginTop: -20,
-    fontSize: 60,
+    fontSize: 40,
   },
   tinyText : {
     fontSize:20
